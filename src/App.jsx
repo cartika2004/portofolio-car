@@ -104,7 +104,7 @@ export default function App() {
   return (
     <>
       <nav className="nav">
-        <span className="nav-brand">Cartika Sabrina</span>
+        <span className="nav-brand">Cartika Sabrina Khairunisa</span>
         <a href="#skills" className="active">Skills</a>
         <a href="#projects-list">Projects</a>
         <a href="#work-exp">Experience</a>
