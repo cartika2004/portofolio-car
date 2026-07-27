@@ -77,67 +77,177 @@ function Gallery({ slides }) {
   );
 }
 
-function ReactionGame() {
-  const [state, setState] = useState('idle'); // idle | waiting | ready | early | result
-  const [reactionMs, setReactionMs] = useState(null);
-  const [best, setBest] = useState(() => {
-    const v = localStorage.getItem('reaction-best');
-    return v ? Number(v) : null;
+const BOARD_SIZE = 4;
+
+function emptyBoard() {
+  return Array.from({ length: BOARD_SIZE }, () => Array(BOARD_SIZE).fill(0));
+}
+
+function cloneBoard(board) {
+  return board.map((row) => [...row]);
+}
+
+function addRandomTile(board) {
+  const empties = [];
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    for (let c = 0; c < BOARD_SIZE; c++) {
+      if (board[r][c] === 0) empties.push([r, c]);
+    }
+  }
+  if (empties.length === 0) return board;
+  const [r, c] = empties[Math.floor(Math.random() * empties.length)];
+  const next = cloneBoard(board);
+  next[r][c] = Math.random() < 0.9 ? 2 : 4;
+  return next;
+}
+
+function reverseRows(board) {
+  return board.map((row) => [...row].reverse());
+}
+
+function transpose(board) {
+  return board[0].map((_, c) => board.map((row) => row[c]));
+}
+
+function slideRowLeft(row) {
+  const filtered = row.filter((v) => v !== 0);
+  const merged = [];
+  let scoreGained = 0;
+  for (let i = 0; i < filtered.length; i++) {
+    if (filtered[i] === filtered[i + 1]) {
+      const val = filtered[i] * 2;
+      merged.push(val);
+      scoreGained += val;
+      i++;
+    } else {
+      merged.push(filtered[i]);
+    }
+  }
+  while (merged.length < BOARD_SIZE) merged.push(0);
+  return { row: merged, scoreGained };
+}
+
+function slide(board, dir) {
+  let b = cloneBoard(board);
+  if (dir === 'right') b = reverseRows(b);
+  else if (dir === 'up') b = transpose(b);
+  else if (dir === 'down') b = reverseRows(transpose(b));
+
+  let scoreGained = 0;
+  let result = b.map((row) => {
+    const { row: newRow, scoreGained: gained } = slideRowLeft(row);
+    scoreGained += gained;
+    return newRow;
   });
-  const timeoutRef = useRef(null);
-  const startRef = useRef(0);
 
-  useEffect(() => () => clearTimeout(timeoutRef.current), []);
+  if (dir === 'right') result = reverseRows(result);
+  else if (dir === 'up') result = transpose(result);
+  else if (dir === 'down') result = transpose(reverseRows(result));
 
-  const start = () => {
-    setState('waiting');
-    setReactionMs(null);
-    const delay = 1000 + Math.random() * 2000;
-    timeoutRef.current = setTimeout(() => {
-      startRef.current = performance.now();
-      setState('ready');
-    }, delay);
+  const moved = result.some((row, r) => row.some((v, c) => v !== board[r][c]));
+  return { board: result, moved, scoreGained };
+}
+
+function canMove(board) {
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    for (let c = 0; c < BOARD_SIZE; c++) {
+      if (board[r][c] === 0) return true;
+      if (c < BOARD_SIZE - 1 && board[r][c] === board[r][c + 1]) return true;
+      if (r < BOARD_SIZE - 1 && board[r][c] === board[r + 1][c]) return true;
+    }
+  }
+  return false;
+}
+
+function tileStyle(v) {
+  if (!v) return {};
+  const t = Math.min(Math.log2(v) / 11, 1);
+  return {
+    background: `color-mix(in srgb, var(--color-accent) ${16 + t * 74}%, var(--color-surface))`,
+    color: t > 0.5 ? 'var(--color-bg)' : 'var(--color-text)',
+  };
+}
+
+const KEY_DIRECTIONS = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down' };
+
+function Game2048() {
+  const [board, setBoard] = useState(() => addRandomTile(addRandomTile(emptyBoard())));
+  const [score, setScore] = useState(0);
+  const [best, setBest] = useState(() => Number(localStorage.getItem('game2048-best') || 0));
+  const [status, setStatus] = useState('playing'); // playing | won | over
+  const boardRef = useRef(board);
+  boardRef.current = board;
+  const touchRef = useRef(null);
+
+  const reset = () => {
+    setBoard(addRandomTile(addRandomTile(emptyBoard())));
+    setScore(0);
+    setStatus('playing');
   };
 
-  const handleClick = () => {
-    if (state === 'waiting') {
-      clearTimeout(timeoutRef.current);
-      setState('early');
-      return;
-    }
-    if (state === 'ready') {
-      const ms = Math.round(performance.now() - startRef.current);
-      setReactionMs(ms);
-      setState('result');
+  const move = (dir) => {
+    if (status === 'over') return;
+    const { board: next, moved, scoreGained } = slide(boardRef.current, dir);
+    if (!moved) return;
+    const withNew = addRandomTile(next);
+    setBoard(withNew);
+    setScore((s) => {
+      const ns = s + scoreGained;
       setBest((b) => {
-        const nb = b === null ? ms : Math.min(b, ms);
-        localStorage.setItem('reaction-best', String(nb));
+        const nb = Math.max(b, ns);
+        localStorage.setItem('game2048-best', String(nb));
         return nb;
       });
-      return;
-    }
-    start();
+      return ns;
+    });
+    if (status === 'playing' && withNew.some((row) => row.includes(2048))) setStatus('won');
+    else if (!canMove(withNew)) setStatus('over');
   };
 
-  const label = {
-    idle: 'Click to start',
-    waiting: 'Wait for it…',
-    early: 'Too soon — click to retry',
-    ready: 'CLICK NOW!',
-    result: `${reactionMs} ms — click to retry`,
-  }[state];
+  const onKeyDown = (e) => {
+    const dir = KEY_DIRECTIONS[e.key];
+    if (dir) { e.preventDefault(); move(dir); }
+  };
+
+  const onTouchStart = (e) => { touchRef.current = e.touches[0]; };
+  const onTouchEnd = (e) => {
+    if (!touchRef.current) return;
+    const dx = e.changedTouches[0].clientX - touchRef.current.clientX;
+    const dy = e.changedTouches[0].clientY - touchRef.current.clientY;
+    touchRef.current = null;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+    if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 'right' : 'left');
+    else move(dy > 0 ? 'down' : 'up');
+  };
 
   return (
     <div
-      className={`game-box game-${state}`}
-      onClick={handleClick}
-      role="button"
+      className="game-box game2048-box"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      onKeyDown={onKeyDown}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
-      <span className="game-kicker">Reaction test</span>
-      <p className="game-label">{label}</p>
-      {best !== null && <p className="game-best">Best: {best} ms</p>}
+      <div className="game2048-head">
+        <span className="game-kicker">2048 — click box, then arrow keys or swipe</span>
+        <span className="game-best">Score {score} · Best {best}</span>
+      </div>
+      <div className="game2048-grid">
+        {board.flat().map((v, i) => (
+          <div key={i} className="game2048-cell" style={tileStyle(v)}>{v || ''}</div>
+        ))}
+      </div>
+      {status !== 'playing' && (
+        <div className="game2048-overlay">
+          <p className="game-label">{status === 'won' ? 'You win! 🎉' : 'Game over'}</p>
+          <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+            {status === 'won' && (
+              <button type="button" className="btn btn-ghost" onClick={(e) => { e.stopPropagation(); setStatus('playing'); }}>Keep playing</button>
+            )}
+            <button type="button" className="btn btn-primary" onClick={(e) => { e.stopPropagation(); reset(); }}>Play again</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -200,7 +310,7 @@ export default function App() {
             <h2 className="split-title">Front-end focused, full stack curious</h2>
             <p className="note">A Computer Engineering Technology student at IPB University (8th semester, 138 credits, 3.82 GPA), currently interning at PT Permodalan Nasional Madani. I care most about interfaces people actually enjoy using, backed by just enough backend and IoT knowledge to ship the whole thing.</p>
           </div>
-          <ReactionGame />
+          <Game2048 />
         </Reveal>
       </div>
 
