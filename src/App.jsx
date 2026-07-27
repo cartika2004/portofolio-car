@@ -3,13 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 const TOOLS = ['React', 'Vue.js', 'TypeScript', 'JavaScript', 'Golang', 'Python', 'PostgreSQL', 'ESP32', 'Git', 'Docker'];
 
 const PROJECTS = [
-  { n: '01', title: 'IRS — Internal Recruitment System', copy: 'Vue.js & Quasar recruitment platform for PNM: document completion module, interview rescheduling, and centralized candidate status monitoring.', img: 'IRS screenshot' },
-  { n: '02', title: 'PASS — PNM Assessment System', copy: 'React Vite + TypeScript dashboard and exam monitoring interface, with real-time face verification and anti-bypass security to protect assessment integrity.', img: 'PASS screenshot' },
-  { n: '03', title: 'Beasiswa — Scholarship management', copy: 'React Vite + TypeScript tool for semester grade input, streamlining application, applicant data, and eligibility verification for company-sponsored scholarship programs.', img: 'Beasiswa screenshot' },
-  { n: '04', title: 'Brosis — Mentorship platform', copy: 'React Vite + TypeScript platform for mentors to track, guide, and evaluate mentees through structured progress logs, reporting, and periodic assessment.', img: 'Brosis screenshot' },
-  { n: '05', title: 'Si Cita — river monitoring', copy: 'Jan 2025 – Jun 2025. Real-time river monitoring on ESP32-S3 across five sensor types (TDS, turbidity, temperature, pH, rainfall); led a technical journal, patent draft and research article to publication.', img: 'Si Cita photo' },
-  { n: '06', title: 'Smart Meeting Room System (Final Project)', copy: 'Aug – Dec 2025. AI-powered meeting room booking on Raspberry Pi: connects to the Google Calendar API for real-time booking, and validates attendance with Dlib face verification.', img: 'Smart Meeting Room photo' },
-  { n: '07', title: 'Smart Ticket System (Client project)', copy: 'An IoT ticketing device in the spirit of Smart Meeting Room System, synced to Google Sheets: shows technicians their assigned tickets and lets them update ticket status directly from the device.', img: 'Smart Ticket System photo' },
+  { n: '01', title: 'IRS — Internal Recruitment System', copy: 'Vue.js & Quasar recruitment platform for PNM: document completion module, interview rescheduling, and centralized candidate status monitoring.', label: 'IRS screenshot', src: '/assets/irs.jpg' },
+  { n: '02', title: 'PASS — PNM Assessment System', copy: 'React Vite + TypeScript dashboard and exam monitoring interface, with real-time face verification and anti-bypass security to protect assessment integrity.', label: 'PASS screenshot', src: '/assets/pass.jpg' },
+  { n: '03', title: 'Beasiswa — Scholarship management', copy: 'React Vite + TypeScript tool for semester grade input, streamlining application, applicant data, and eligibility verification for company-sponsored scholarship programs.', label: 'Beasiswa screenshot', src: '/assets/beasiswa.jpg' },
+  { n: '04', title: 'Brosis — Mentorship platform', copy: 'React Vite + TypeScript platform for mentors to track, guide, and evaluate mentees through structured progress logs, reporting, and periodic assessment.', label: 'Brosis screenshot', src: '/assets/brosis.jpg' },
+  { n: '05', title: 'Si Cita — river monitoring', copy: 'Jan 2025 – Jun 2025. Real-time river monitoring on ESP32-S3 across five sensor types (TDS, turbidity, temperature, pH, rainfall); led a technical journal, patent draft and research article to publication.', label: 'Si Cita photo', src: '/assets/si-cita.jpg' },
+  { n: '06', title: 'Smart Meeting Room System (Final Project)', copy: 'Aug – Dec 2025. AI-powered meeting room booking on Raspberry Pi: connects to the Google Calendar API for real-time booking, and validates attendance with Dlib face verification.', label: 'Smart Meeting Room photo', src: '/assets/smart-meeting-room.jpg' },
+  { n: '07', title: 'Smart Ticket System (Client project)', copy: 'An IoT ticketing device in the spirit of Smart Meeting Room System, synced to Google Sheets: shows technicians their assigned tickets and lets them update ticket status directly from the device.', label: 'Smart Ticket System photo', src: '/assets/smart-ticket-system.jpg' },
 ];
 
 function Reveal({ as: Tag = 'section', className = '', children, ...rest }) {
@@ -49,6 +49,12 @@ function CountUp({ target, suffix = '' }) {
   return <p className="stat-num" ref={ref}>{val}{suffix}</p>;
 }
 
+function Photo({ src, alt }) {
+  const [broken, setBroken] = useState(false);
+  if (!src || broken) return alt;
+  return <img src={src} alt={alt} onError={() => setBroken(true)} />;
+}
+
 function Gallery({ slides }) {
   const [idx, setIdx] = useState(0);
   useEffect(() => {
@@ -60,7 +66,7 @@ function Gallery({ slides }) {
   return (
     <div className="exp-gallery">
       {slides.map((s, i) => (
-        <div key={i} className={`slide ${i === idx ? 'active' : ''}`}>{s}</div>
+        <div key={i} className={`slide ${i === idx ? 'active' : ''}`}><Photo src={s.src} alt={s.alt} /></div>
       ))}
       <div className="exp-gallery-dots">
         {slides.map((_, i) => (
@@ -71,7 +77,7 @@ function Gallery({ slides }) {
   );
 }
 
-function ProjectThumb({ label }) {
+function ProjectThumb({ label, src }) {
   const ref = useRef(null);
   const onMove = (e) => {
     const r = ref.current.getBoundingClientRect();
@@ -80,7 +86,7 @@ function ProjectThumb({ label }) {
     ref.current.style.transform = `rotateY(${px * 14}deg) rotateX(${-py * 14}deg) scale(1.04)`;
   };
   const onLeave = () => { ref.current.style.transform = ''; };
-  return <div className="f-thumb lighten" ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}>{label}</div>;
+  return <div className="f-thumb lighten" ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}><Photo src={src} alt={label} /></div>;
 }
 
 const CodeIcon = () => (
@@ -181,7 +187,7 @@ export default function App() {
           <span className="kicker" style={{ textAlign: 'center' }}>Projects</span>
           {PROJECTS.map((p) => (
             <Reveal as="div" className="feature proj-feature" key={p.n}>
-              <ProjectThumb label={p.img} />
+              <ProjectThumb label={p.label} src={p.src} />
               <p className="f-num">{p.n}</p>
               <h2 className="f-title">{p.title}</h2>
               <p className="f-copy">{p.copy}</p>
@@ -196,14 +202,17 @@ export default function App() {
             <p className="note">Final project and PNM implementation, Aug–Dec 2025. An AI-powered room booking ecosystem on Raspberry Pi: connects to the Google Calendar API to book meeting rooms in real time, and validates attendance with Dlib face verification, on a custom PCB and 3D-designed enclosure built in Eagle and AutoCAD.</p>
           </div>
           <figure className="split-figure lighten photo-slot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-surface)', fontSize: 13, color: 'color-mix(in srgb, var(--color-text) 55%, transparent)' }}>
-            Add a photo of the Smart Meeting Room System
+            <Photo src="/assets/smart-meeting-room.jpg" alt="Add a photo of the Smart Meeting Room System" />
           </figure>
         </Reveal>
 
         <section className="features" id="work-exp">
           <span className="kicker" style={{ textAlign: 'center' }}>Experience</span>
           <div className="exp-item">
-            <Gallery slides={['PNM team photo', 'PNM office moment']} />
+            <Gallery slides={[
+              { src: '/assets/pnm-team.jpg', alt: 'PNM team photo' },
+              { src: '/assets/pnm-office.jpg', alt: 'PNM office moment' },
+            ]} />
             <div className="exp-copy">
               <p className="f-num">01</p>
               <h2 className="f-title">Application Development Intern, PNM</h2>
@@ -211,7 +220,10 @@ export default function App() {
             </div>
           </div>
           <div className="exp-item">
-            <Gallery slides={['Toyo Sensing team photo', 'Toyo Sensing field work']} />
+            <Gallery slides={[
+              { src: '/assets/toyo-team.jpg', alt: 'Toyo Sensing team photo' },
+              { src: '/assets/toyo-fieldwork.jpg', alt: 'Toyo Sensing field work' },
+            ]} />
             <div className="exp-copy">
               <p className="f-num">02</p>
               <h2 className="f-title">IoT Development Intern, PT Toyo Sensing Indonesia</h2>
