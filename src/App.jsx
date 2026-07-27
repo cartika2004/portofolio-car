@@ -77,6 +77,71 @@ function Gallery({ slides }) {
   );
 }
 
+function ReactionGame() {
+  const [state, setState] = useState('idle'); // idle | waiting | ready | early | result
+  const [reactionMs, setReactionMs] = useState(null);
+  const [best, setBest] = useState(() => {
+    const v = localStorage.getItem('reaction-best');
+    return v ? Number(v) : null;
+  });
+  const timeoutRef = useRef(null);
+  const startRef = useRef(0);
+
+  useEffect(() => () => clearTimeout(timeoutRef.current), []);
+
+  const start = () => {
+    setState('waiting');
+    setReactionMs(null);
+    const delay = 1000 + Math.random() * 2000;
+    timeoutRef.current = setTimeout(() => {
+      startRef.current = performance.now();
+      setState('ready');
+    }, delay);
+  };
+
+  const handleClick = () => {
+    if (state === 'waiting') {
+      clearTimeout(timeoutRef.current);
+      setState('early');
+      return;
+    }
+    if (state === 'ready') {
+      const ms = Math.round(performance.now() - startRef.current);
+      setReactionMs(ms);
+      setState('result');
+      setBest((b) => {
+        const nb = b === null ? ms : Math.min(b, ms);
+        localStorage.setItem('reaction-best', String(nb));
+        return nb;
+      });
+      return;
+    }
+    start();
+  };
+
+  const label = {
+    idle: 'Click to start',
+    waiting: 'Wait for it…',
+    early: 'Too soon — click to retry',
+    ready: 'CLICK NOW!',
+    result: `${reactionMs} ms — click to retry`,
+  }[state];
+
+  return (
+    <div
+      className={`game-box game-${state}`}
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+    >
+      <span className="game-kicker">Reaction test</span>
+      <p className="game-label">{label}</p>
+      {best !== null && <p className="game-best">Best: {best} ms</p>}
+    </div>
+  );
+}
+
 function ProjectThumb({ label, src }) {
   const ref = useRef(null);
   const onMove = (e) => {
@@ -130,11 +195,12 @@ export default function App() {
 
       <div className="wrap">
         <Reveal className="split" id="about">
-          <div className="split-copy" style={{ gridColumn: '1 / -1', maxWidth: 'var(--measure)' }}>
+          <div className="split-copy">
             <span className="kicker">About</span>
             <h2 className="split-title">Front-end focused, full stack curious</h2>
             <p className="note">A Computer Engineering Technology student at IPB University (8th semester, 138 credits, 3.82 GPA), currently interning at PT Permodalan Nasional Madani. I care most about interfaces people actually enjoy using, backed by just enough backend and IoT knowledge to ship the whole thing.</p>
           </div>
+          <ReactionGame />
         </Reveal>
       </div>
 
