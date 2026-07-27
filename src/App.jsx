@@ -106,11 +106,11 @@ export default function App() {
         <button type="button" className="btn btn-primary" onClick={() => (location.href = 'mailto:cartika2004@gmail.com')}>Contact me</button>
       </nav>
 
-      <div className="wrap">
-        <section className="hero reveal in-view" ref={heroRef} onMouseMove={onHeroMove}>
-          <figure className="hero-figure lighten">
-            <img src="/assets/portrait.jpg" alt="Portrait photograph of Cartika" />
-          </figure>
+      <section className="hero reveal in-view" ref={heroRef} onMouseMove={onHeroMove}>
+        <figure className="hero-figure lighten">
+          <img src="/assets/portrait.jpg" alt="Portrait photograph of Cartika" />
+        </figure>
+        <div className="wrap">
           <div className="hero-inner">
             <h1 className="display"><span className="line">Interfaces that show up.</span> <span className="line">Built to be used.</span></h1>
             <p className="sub">I'm Cartika, a front-end focused Computer Engineering Technology student at IPB University and Application Development Intern at PT Permodalan Nasional Madani. I build enterprise interfaces in React and Vue — with just enough back-end and IoT know-how to connect them to the real world.</p>
@@ -119,8 +119,8 @@ export default function App() {
               <button type="button" className="btn btn-ghost" onClick={() => (location.href = 'mailto:cartika2004@gmail.com')}>Get in touch</button>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       <div className="wrap">
         <Reveal className="split" id="about">
