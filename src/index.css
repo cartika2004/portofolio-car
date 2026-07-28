@@ -1,18 +1,18 @@
 :root {
-  --color-bg: #161826;
-  --color-surface: #232532;
-  --color-text: #e9e9ed;
-  --color-accent: #9184d9;
-  --color-accent-100: #f5f4ff;
-  --color-accent-300: #d2cefd;
-  --color-accent-600: #796cbf;
-  --color-accent-800: #423a6a;
-  --color-accent-900: #2b2741;
-  --color-neutral-700: #595d6c;
-  --color-neutral-800: #3f424d;
-  --color-divider: color-mix(in srgb, #e9e9ed 16%, transparent);
-  --color-section: #262a60;
-  --color-section-glow: #353b80;
+  --color-bg: #153149;
+  --color-surface: #223e55;
+  --color-text: #efffff;
+  --color-accent: #e43b36;
+  --color-accent-100: #fcebeb;
+  --color-accent-300: #ef8986;
+  --color-accent-600: #ab2c29;
+  --color-accent-800: #671b18;
+  --color-accent-900: #220908;
+  --color-neutral-700: #968476;
+  --color-neutral-800: #6e4a30;
+  --color-divider: color-mix(in srgb, var(--color-text) 16%, transparent);
+  --color-section: #322116;
+  --color-section-glow: var(--color-accent);
   --font-heading: 'Inter', system-ui, sans-serif;
   --font-heading-weight: 500;
   --font-body: 'Inter', system-ui, sans-serif;
@@ -34,7 +34,7 @@ body {
     var(--color-bg);
 }
 h1, h2, h3 { font-family: var(--font-heading); font-weight: var(--font-heading-weight); margin: 0; }
-a { color: var(--color-accent); text-underline-offset: 3px; }
+a { color: var(--color-accent-300); text-underline-offset: 3px; }
 a:hover { color: var(--color-accent-300); }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--edge); }
 .lighten { mix-blend-mode: lighten; background-color: transparent; }
@@ -48,24 +48,24 @@ a:hover { color: var(--color-accent-300); }
   padding: var(--space-3) calc(var(--space-3) * 1.2); transition: transform 0.12s ease, background 0.15s ease;
 }
 .btn:active { transform: scale(0.94); }
-.btn-primary { border-color: var(--color-accent); color: var(--color-accent); }
+.btn-primary { border-color: var(--color-accent); color: var(--color-accent-300); }
 .btn-primary:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
-.btn-ghost { color: var(--color-accent); padding-inline: var(--space-3); }
+.btn-ghost { color: var(--color-accent-300); padding-inline: var(--space-3); }
 .btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
 .tag { display: inline-flex; align-items: center; font-size: 11px; padding: 3px 10px; border-radius: calc(var(--radius-md) * 0.75); }
-.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent-300); }
 :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
 .nav { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--edge); }
 .nav-brand { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; margin-right: auto; }
 .nav a { color: var(--color-text); text-decoration: none; white-space: nowrap; }
-.nav a:hover { color: var(--color-accent); }
-.nav a.active { color: var(--color-accent); }
+.nav a:hover { color: var(--color-accent-300); }
+.nav a.active { color: var(--color-accent-300); }
 @media (max-width: 480px) { .nav a { display: none; } }
 
 .kicker {
   position: relative; display: block; font-size: 13px; line-height: var(--half);
-  letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-accent);
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-accent-300);
   margin: 0 0 calc(var(--leading) - var(--half));
 }
 .kicker::before { content: ''; position: absolute; left: -64px; top: calc(50% - 0.5px); width: 44px; height: 1px; background: var(--color-accent); }
@@ -96,7 +96,7 @@ a:hover { color: var(--color-accent-300); }
   border: 1px solid var(--color-divider); padding: var(--half); user-select: none;
 }
 .game-box:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }
-.game-kicker { display: block; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-accent); }
+.game-kicker { display: block; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-accent-300); }
 .game-label { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 20px; margin: 0; }
 .game-best { font-size: 13px; color: color-mix(in srgb, var(--color-text) 64%, transparent); }
 
@@ -128,7 +128,7 @@ a:hover { color: var(--color-accent-300); }
 .feature:hover { background: color-mix(in srgb, var(--color-accent) 6%, transparent); transform: translateX(4px); }
 .feature:hover .f-num { color: var(--color-accent-300); }
 .feature + .feature::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--color-neutral-700) 48px calc(100% - 48px), transparent); }
-.f-num { font-size: 15px; color: var(--color-accent); margin: 0; }
+.f-num { font-size: 15px; color: var(--color-accent-300); margin: 0; }
 .f-title { font-size: 24px; letter-spacing: -0.01em; }
 .f-copy { font-size: 15.5px; line-height: var(--leading); margin: 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); max-width: 52ch; }
 @media (max-width: 880px) { .feature { grid-template-columns: 1fr; gap: var(--half); } .f-copy { max-width: var(--measure); } }
@@ -141,7 +141,7 @@ a:hover { color: var(--color-accent-300); }
 .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: var(--half); padding: var(--leading) 0 calc(2 * var(--leading)); }
 .tool-card { display: flex; align-items: center; gap: var(--half); padding: calc(var(--half) * 0.9) var(--half); border-radius: var(--radius-md); background: var(--color-neutral-800); transition: background 0.2s ease, transform 0.2s ease; }
 .tool-card:hover { background: color-mix(in srgb, var(--color-accent) 12%, var(--color-neutral-800)); transform: translateY(-2px); }
-.tool-icon { width: 32px; height: 32px; border-radius: var(--radius-md); background: color-mix(in srgb, var(--color-accent) 18%, transparent); display: flex; align-items: center; justify-content: center; color: var(--color-accent); flex-shrink: 0; }
+.tool-icon { width: 32px; height: 32px; border-radius: var(--radius-md); background: color-mix(in srgb, var(--color-accent) 18%, transparent); display: flex; align-items: center; justify-content: center; color: var(--color-accent-300); flex-shrink: 0; }
 .tool-icon svg { width: 18px; height: 18px; }
 .tool-card span:last-child { font-size: 14px; }
 
