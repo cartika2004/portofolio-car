@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const TOOLS = ['React', 'Vue.js', 'TypeScript', 'JavaScript', 'Golang', 'Python', 'PostgreSQL', 'ESP32', 'Git', 'Docker'];
+const TOOLS = ['React', 'Vue.js', 'TypeScript', 'JavaScript', 'Golang', 'Python', 'PostgreSQL', 'ESP32', 'Git', 'Docker', 'Postman', 'Figma', 'Documentation'];
 
 const PROJECTS = [
   { n: '01', title: 'IRS — Internal Recruitment System', copy: 'Vue.js & Quasar recruitment platform for PNM: document completion module, interview rescheduling, and centralized candidate status monitoring.', label: 'IRS screenshot', src: '/assets/irs.jpg' },
