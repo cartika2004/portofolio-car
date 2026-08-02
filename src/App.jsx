@@ -1,4 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
+import TiltedCard from './TiltedCard';
+import PillNav from './PillNav';
+import GlowingEdgeCard from './GlowingEdgeCard';
+import MusicDeck from './MusicDeck';
+import Minesweeper from './Minesweeper';
+
+const NAV_ITEMS = [
+  { label: 'Skills', href: '#skills' },
+  { label: 'Projects', href: '#projects-list' },
+  { label: 'Experience', href: '#work-exp' },
+  { label: 'Contact', href: '#contact' },
+];
 
 const TOOLS = ['React', 'Vue.js', 'TypeScript', 'JavaScript', 'Golang', 'Python', 'PostgreSQL', 'ESP32', 'Git', 'Docker', 'Postman', 'Figma', 'Documentation'];
 
@@ -8,7 +20,7 @@ const PROJECTS = [
   { n: '03', title: 'Beasiswa — Scholarship management', copy: 'React Vite + TypeScript tool for semester grade input, streamlining application, applicant data, and eligibility verification for company-sponsored scholarship programs.', label: 'Beasiswa screenshot', src: '/assets/beasiswa.jpg' },
   { n: '04', title: 'Brosis — Mentorship platform', copy: 'React Vite + TypeScript platform for mentors to track, guide, and evaluate mentees through structured progress logs, reporting, and periodic assessment.', label: 'Brosis screenshot', src: '/assets/brosis.jpg' },
   { n: '05', title: 'Si Cita — river monitoring', copy: 'Jan 2025 – Jun 2025. Real-time river monitoring on ESP32-S3 across five sensor types (TDS, turbidity, temperature, pH, rainfall); led a technical journal, patent draft and research article to publication.', label: 'Si Cita photo', src: '/assets/si-cita.jpg' },
-  { n: '06', title: 'Smart Meeting Room System (Final Project)', copy: 'Aug – Dec 2025. AI-powered meeting room booking on Raspberry Pi: connects to the Google Calendar API for real-time booking, and validates attendance with Dlib face verification.', label: 'Smart Meeting Room photo', src: '/assets/smart-meeting-room.jpg' },
+  { n: '06', title: 'Smart Meeting Room System (Thesis Project)', copy: 'Aug – Dec 2025. AI-powered meeting room booking on Raspberry Pi: connects to the Google Calendar API for real-time booking, and validates attendance with Dlib face verification.', label: 'Smart Meeting Room photo', src: '/assets/smart-meeting-room.jpg' },
   { n: '07', title: 'Smart Ticket System (Client project)', copy: 'An IoT ticketing device in the spirit of Smart Meeting Room System, synced to Google Sheets: shows technicians their assigned tickets and lets them update ticket status directly from the device.', label: 'Smart Ticket System photo', src: '/assets/smart-ticket-system.jpg' },
 ];
 
@@ -268,36 +280,72 @@ const CodeIcon = () => (
   <svg viewBox="0 0 256 256" fill="currentColor"><path d="M69.12,94.15,28.5,128l40.62,33.85a8,8,0,1,1-10.24,12.3l-48-40a8,8,0,0,1,0-12.3l48-40a8,8,0,1,1,10.24,12.3Zm176,27.7-48-40a8,8,0,1,0-10.24,12.3L227.5,128l-40.62,33.85a8,8,0,1,0,10.24,12.3l48-40a8,8,0,0,0,0-12.3ZM162.73,32.48a8,8,0,0,0-10.25,4.79l-64,176a8,8,0,0,0,4.79,10.26A8.14,8.14,0,0,0,96,224a8,8,0,0,0,7.52-5.27l64-176A8,8,0,0,0,162.73,32.48Z"/></svg>
 );
 
+const WhatsAppIcon = () => (
+  <svg viewBox="0 0 32 32" fill="currentColor" width="18" height="18"><path d="M16.004 2.667c-7.364 0-13.333 5.97-13.333 13.333 0 2.353.615 4.646 1.782 6.666L2.667 29.333l6.84-1.794a13.27 13.27 0 0 0 6.497 1.694h.006c7.363 0 13.332-5.97 13.332-13.333S23.367 2.667 16.004 2.667zm0 24.4h-.005a11.05 11.05 0 0 1-5.63-1.541l-.404-.24-4.06 1.065 1.084-3.958-.263-.406a11.03 11.03 0 0 1-1.69-5.887c0-6.11 4.973-11.083 11.09-11.083 2.963 0 5.748 1.154 7.842 3.25a11.02 11.02 0 0 1 3.246 7.837c0 6.11-4.973 11.083-11.11 11.083zm6.087-8.303c-.334-.167-1.97-.972-2.276-1.083-.305-.111-.527-.167-.75.167-.222.333-.86 1.083-1.055 1.305-.194.223-.389.25-.722.084-.334-.167-1.409-.52-2.684-1.656-.992-.885-1.663-1.978-1.858-2.311-.194-.334-.02-.514.147-.68.15-.15.334-.39.5-.584.167-.194.223-.334.334-.556.111-.223.056-.417-.028-.584-.083-.167-.75-1.807-1.028-2.474-.27-.65-.545-.562-.75-.573l-.639-.011c-.222 0-.583.083-.888.417-.305.333-1.166 1.14-1.166 2.78 0 1.64 1.194 3.226 1.361 3.448.167.222 2.352 3.593 5.699 5.038.796.344 1.417.55 1.901.703.799.254 1.526.218 2.101.132.641-.096 1.97-.805 2.248-1.583.278-.777.278-1.444.194-1.583-.083-.14-.305-.223-.639-.39z"/></svg>
+);
+
 export default function App() {
   const heroRef = useRef(null);
+  const videoRef = useRef(null);
   const onHeroMove = (e) => {
     const r = heroRef.current.getBoundingClientRect();
     heroRef.current.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
     heroRef.current.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
   };
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) videoRef.current?.pause();
+  }, []);
 
   return (
     <>
-      <nav className="nav">
-        <span className="nav-brand">Cartika Sabrina Khairunisa</span>
-        <a href="#skills" className="active">Skills</a>
-        <a href="#projects-list">Projects</a>
-        <a href="#work-exp">Experience</a>
-        <a href="#contact">Contact</a>
-        <button type="button" className="btn btn-primary" onClick={() => (location.href = 'mailto:cartika2004@gmail.com')}>Contact me</button>
-      </nav>
+      <header className="site-nav">
+        <div className="site-nav-inner">
+          <PillNav
+            className="site-pillnav"
+            logo={<span>Car</span>}
+            logoHref="#"
+            items={NAV_ITEMS}
+            activeHref="#skills"
+          />
+          <button type="button" className="btn btn-primary site-nav-cta" onClick={() => window.open('https://wa.me/6282119394048?text=' + encodeURIComponent('Halo Cartika, saya lihat portofolio kamu dan ingin ngobrol lebih lanjut.'), '_blank')}><WhatsAppIcon /><span>hit me up!</span></button>
+        </div>
+      </header>
 
-      <section className="hero reveal in-view" ref={heroRef} onMouseMove={onHeroMove}>
-        <figure className="hero-figure lighten">
-          <img src="/assets/portrait.jpg" alt="Portrait photograph of Cartika" />
-        </figure>
+      <section className="hero" ref={heroRef} onMouseMove={onHeroMove}>
+        <video
+          className="hero-video"
+          ref={videoRef}
+          src="https://designerstephen.github.io/public-assets/videos/serene-art-hero.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+        <div className="hero-scrim" />
         <div className="wrap">
-          <div className="hero-inner">
-            <h1 className="display"><span className="line">Interfaces that show up.</span> <span className="line">Built to be used.</span></h1>
-            <p className="sub">I'm Cartika, a front-end focused Computer Engineering Technology student at IPB University and Application Development Intern at PT Permodalan Nasional Madani. I build enterprise interfaces in React and Vue — with just enough back-end and IoT know-how to connect them to the real world.</p>
-            <div className="row">
-              <button type="button" className="btn btn-primary" onClick={() => document.getElementById('projects-list').scrollIntoView()}>View my work</button>
-              <button type="button" className="btn btn-ghost" onClick={() => (location.href = 'mailto:cartika2004@gmail.com')}>Get in touch</button>
+          <div className="hero-layout">
+            <div className="hero-inner">
+              <h1 className="display fade-rise delay-1"><span className="line">Interfaces that show up.</span> <span className="line">Built to be used.</span></h1>
+              <p className="sub fade-rise delay-2">I'm Cartika, a front-end developer focused on building enterprise web applications with React and Vue. I create interfaces that are clean, responsive, and designed for real users not just good-looking demos.</p>
+              <div className="row fade-rise delay-3">
+                <button type="button" className="btn btn-primary" onClick={() => document.getElementById('projects-list').scrollIntoView()}>View my work</button>
+                <button type="button" className="btn btn-ghost" onClick={() => (location.href = 'mailto:cartika2004@gmail.com')}>Get in touch</button>
+              </div>
+            </div>
+            <div className="hero-photo fade-rise delay-4">
+              <TiltedCard
+                imageSrc="/assets/portrait.jpg"
+                altText="Portrait photograph of Cartika"
+                captionText="Cartika Sabrina K."
+                containerHeight="100%"
+                containerWidth="100%"
+                imageHeight="100%"
+                imageWidth="100%"
+                rotateAmplitude={10}
+                scaleOnHover={1.08}
+                showMobileWarning={false}
+                showTooltip={true}
+              />
             </div>
           </div>
         </div>
@@ -308,9 +356,11 @@ export default function App() {
           <div className="split-copy">
             <span className="kicker">About</span>
             <h2 className="split-title">Front-end focused, full stack curious</h2>
-            <p className="note">A Computer Engineering Technology student at IPB University (8th semester, 138 credits, 3.82 GPA), currently interning at PT Permodalan Nasional Madani. I care most about interfaces people actually enjoy using, backed by just enough backend and IoT knowledge to ship the whole thing.</p>
+            <p className="note">I'm a Computer Engineering Technology student at IPB University and an Application Development Intern at PT Permodalan Nasional Madani. I enjoy building responsive, user-centered web applications with React and Vue, while exploring back-end development and IoT to better understand how complete systems come together.</p>
           </div>
-          <Game2048 />
+          <GlowingEdgeCard className="glow-music">
+            <MusicDeck />
+          </GlowingEdgeCard>
         </Reveal>
       </div>
 
@@ -352,10 +402,14 @@ export default function App() {
 
         <section className="features" id="tools">
           <span className="kicker">Tools & technologies</span>
-          <div className="tools-grid">
-            {TOOLS.map((t) => (
-              <div className="tool-card" key={t}><span className="tool-icon"><CodeIcon /></span><span>{t}</span></div>
-            ))}
+          <div className="ticker">
+            <div className="ticker-track">
+              {[...TOOLS, ...TOOLS].map((t, i) => (
+                <div className="tool-card" key={`${t}-${i}`} aria-hidden={i >= TOOLS.length}>
+                  <span className="tool-icon"><CodeIcon /></span><span>{t}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -377,9 +431,11 @@ export default function App() {
             <h2 className="split-title">Smart Meeting Room System</h2>
             <p className="note">Final project and PNM implementation, Aug–Dec 2025. An AI-powered room booking ecosystem on Raspberry Pi: connects to the Google Calendar API to book meeting rooms in real time, and validates attendance with Dlib face verification, on a custom PCB and 3D-designed enclosure built in Eagle and AutoCAD.</p>
           </div>
-          <figure className="split-figure lighten photo-slot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-surface)', fontSize: 13, color: 'color-mix(in srgb, var(--color-text) 55%, transparent)' }}>
-            <Photo src="/assets/smart-meeting-room.jpg" alt="Add a photo of the Smart Meeting Room System" />
-          </figure>
+          <GlowingEdgeCard className="glow-photo">
+            <figure className="split-figure lighten photo-slot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-surface)', fontSize: 13, color: 'color-mix(in srgb, var(--color-text) 55%, transparent)' }}>
+              <Photo src="/assets/smart-meeting-room.jpg" alt="Add a photo of the Smart Meeting Room System" />
+            </figure>
+          </GlowingEdgeCard>
         </Reveal>
 
         <section className="features" id="work-exp">
@@ -416,6 +472,20 @@ export default function App() {
           <div className="feature"><p className="f-num" style={{ textAlign: 'center' }}>04</p><h2 className="f-title">Dicoding Indonesia</h2><p className="f-copy">Machine Learning Development, Python Programming, JavaScript Programming, SQL, DevOps, and Software Development.</p></div>
         </section>
 
+        <Reveal as="section" className="features playlist" id="games">
+          <span className="kicker" style={{ textAlign: 'center' }}>Mini games</span>
+          <h2 className="split-title playlist-title">Procrastinate here for a second</h2>
+          <p className="playlist-sub">2048 on the left, Minesweeper on the right — both save your best score locally.</p>
+          <div className="games-grid">
+            <GlowingEdgeCard className="glow-2048">
+              <Game2048 />
+            </GlowingEdgeCard>
+            <GlowingEdgeCard className="glow-2048">
+              <Minesweeper />
+            </GlowingEdgeCard>
+          </div>
+        </Reveal>
+
         <section className="quote">
           <figure>
             <blockquote>"From riverbank sensors to enterprise recruitment platforms — I like building things that show up and work when it matters."</blockquote>
@@ -427,14 +497,14 @@ export default function App() {
 
         <section className="close" id="contact">
           <h3>Let's build something reliable</h3>
-          <p className="sub">Open to full-stack and IoT internship or graduate roles. Based in Jakarta Metropolitan Area, Indonesia — reachable by email, LinkedIn, or phone.</p>
+          <p className="sub">Open to full-time Software Engineer, Front-End Developer, or Application Developer opportunities. Based in the Jakarta Metropolitan Area, Indonesia — reachable by email, LinkedIn, or phone.</p>
           <div className="signup">
             <input className="input" type="email" placeholder="cartika2004@gmail.com" aria-label="Email address" readOnly />
             <button type="button" className="btn btn-primary" onClick={() => (location.href = 'mailto:cartika2004@gmail.com')}>Email me</button>
           </div>
           <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap', marginTop: 'var(--half)' }}>
             <button type="button" className="btn btn-ghost" onClick={() => window.open('https://www.linkedin.com/in/cartikasabrinakhairunisa', '_blank')}>LinkedIn</button>
-            <button type="button" className="btn btn-ghost" onClick={() => (location.href = 'tel:+622119394048')}>(+62) 821-1939-4048</button>
+            <button type="button" className="btn btn-ghost" onClick={() => (location.href = 'tel:+6282119394048')}>(+62) 821-1939-4048</button>
           </div>
         </section>
 
